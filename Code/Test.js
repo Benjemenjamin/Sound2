@@ -5,7 +5,7 @@ const poseNameInput = document.getElementById('poseName');
 const addPoseButton = document.getElementById('addPoseButton');
 const saveButton = document.getElementById('saveButton');
 const fileInput = document.getElementById("file-input");
-
+const StartButton =  document.getElementById("StartButton")
 const poseLibraryFileName = 'pose-library.json';
 const distanceThreshold = 0.2;
 let poseLibrary = new Map();
@@ -36,12 +36,15 @@ let history = [];
   });
 
   camera.start();
-
-  addPoseButton.addEventListener('click', addPose); // add pose button
+  
+  addPoseButton.addEventListener('click', addPose);
+  StartButton.addEventListener('click', GameStart); // add pose button
   fileInput.addEventListener('change', loadPoseLibrary); // load pose library input
   saveButton.addEventListener('click', savePoseLibrary); // save pose library button
 })();
-
+function GameStart() {
+    console.log("Hello");
+}
 function onRecognizedPose(label) {
   if (label !== 'unknown') {
     console.log(label);
