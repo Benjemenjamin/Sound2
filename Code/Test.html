@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pose Recognition</title>
+    <link rel="stylesheet" type="text/css" href="./Test.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils"></script>
+    <script src="Test.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+    </div>
+    <div class="container">
+        <input type="text" id="poseName" placeholder="pose name">:
+        <button id="addPoseButton" class="button"><b>add</b> pose sample</button>
+    </div>
+    <audio controls>
+        <source src="horse.ogg" type="audio/ogg">
+        <source src="horse.mp3" type="audio/mpeg">
+    </audio>
+    <div class="container">
+        <button id="saveButton" class="button"><b>save</b> pose library</button>
+        <label for="file-input" class="button"><b>load</b> pose library</label>
+        <input type="file" id="file-input" name="file-input" accept=".json" />
+    </div>
+</body>
+
+</html>
