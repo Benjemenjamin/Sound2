@@ -57,34 +57,44 @@ function GameStart() {
 function GameLoop() {
     const time = Audio.currentTime
     let beat = time / 0.530973451 * 2.0
-    checkPoseTiming(time);
-    console.log(beat)
+    checkPoseTiming(beat);
+    // console.log(beat)
     requestAnimationFrame(GameLoop);
 }
 
 const cues = [
-    { time: 2.0, pose: "hands_up", duration: 1.0 },
-    { time: 4.5, pose: "T" },
-    { time: 6.0, pose: "Cinema" },
-    { time: 15.0, pose: "W" }
+    { beat: 22.0, pose: "baram 2", duration: 2 },
+    { beat: 37.0, pose: "baram 3", duration: 1 },
+    { beat: 54.0, pose: "baram 5", duration: 1 },
+    { beat: 93.0, pose: "SO", duration: 1 },
+    { beat: 96.0, pose: "DO I", duration: 1 },
+    { beat: 109.0, pose: "I", duration: 1 },
+    { beat: 111.0, pose: "ON", duration: 1 },
+    { beat: 133.0, pose: "AAA", duration: 1 },
+    { beat: 165.0, pose: "GIVE", duration: 1 },
+    { beat: 168.0, pose: "UP", duration: 1 },
+    { beat: 173.0, pose: "LET", duration: 1 },
+    { beat: 176.0, pose: "DOWN", duration: 1 }
 ];
-let testTime = 3.0
+
+let testTime = 180
 let currentCueIndex = 0;
 let holdStartTime = null
 const tolerance = 0.3
 
-function checkPoseTiming(time) {
+function checkPoseTiming(beat) {
     const cue = cues[currentCueIndex];
     if (!cue) return;
-    const inWindow = Math.abs(time - cue.time) < tolerance;
+    const inWindow = Math.abs(beat - cue.beat) < tolerance;
     if (inWindow) {
         if (holdStartTime === null) {
-            holdStartTime = time
+            holdStartTime = beat
             console.log("Pose gestartet:", cue.pose);
             console.log(holdStartTime)
             const heldTime = testTime - holdStartTime;
             if (heldTime >= cue.duration) {
                 console.log("Pose gehalten!:", cue.pose);
+                holdStartTime = null
                 currentCueIndex++;
             }
         }
