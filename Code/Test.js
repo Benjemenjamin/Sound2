@@ -45,6 +45,7 @@ let history = [];
     saveButton.addEventListener('click', savePoseLibrary); // save pose library button
 })();
 
+const bpm = 113;
 
 function GameStart() {
     console.log("Hello");
@@ -55,32 +56,43 @@ function GameStart() {
 
 function GameLoop() {
     const time = Audio.currentTime
+    let beat = time / 0.530973451 * 2.0
     checkPoseTiming(time);
-
+    console.log(beat)
     requestAnimationFrame(GameLoop);
 }
 
 const cues = [
-    { time: 2.0, pose: "hands_up" },
+    { time: 2.0, pose: "hands_up", duration: 1.0 },
     { time: 4.5, pose: "T" },
     { time: 6.0, pose: "Cinema" },
     { time: 15.0, pose: "W" }
 ];
-
+let testTime = 3.0
 let currentCueIndex = 0;
+let holdStartTime = null
 const tolerance = 0.3
 
 function checkPoseTiming(time) {
     const cue = cues[currentCueIndex];
     if (!cue) return;
-
-    if (Math.abs(time - cue.time) < tolerance) {
-        console.log("JETZT Pose machen:", cue.pose);
+    const inWindow = Math.abs(time - cue.time) < tolerance;
+    if (inWindow) {
+        if (holdStartTime === null) {
+            holdStartTime = time
+            console.log("Pose gestartet:", cue.pose);
+            console.log(holdStartTime)
+            const heldTime = testTime - holdStartTime;
+            if (heldTime >= cue.duration) {
+                console.log("Pose gehalten!:", cue.pose);
+                currentCueIndex++;
+            }
+        }
     }
 
-    if (time > cue.time + tolerance) {
-        currentCueIndex++;
-    }
+    // if (time > cue.time + tolerance) {
+    //     currentCueIndex++;
+    // }
 }
 
 
