@@ -62,48 +62,7 @@ function GameLoop() {
     requestAnimationFrame(GameLoop);
 }
 
-const cues = [
-    { beat: 22.0, pose: "baram 2", duration: 2 },
-    { beat: 37.0, pose: "baram 3", duration: 1 },
-    { beat: 54.0, pose: "baram 5", duration: 1 },
-    { beat: 93.0, pose: "SO", duration: 1 },
-    { beat: 96.0, pose: "DO I", duration: 1 },
-    { beat: 109.0, pose: "I", duration: 1 },
-    { beat: 111.0, pose: "ON", duration: 1 },
-    { beat: 133.0, pose: "AAA", duration: 1 },
-    { beat: 165.0, pose: "GIVE", duration: 1 },
-    { beat: 168.0, pose: "UP", duration: 1 },
-    { beat: 173.0, pose: "LET", duration: 1 },
-    { beat: 176.0, pose: "DOWN", duration: 1 }
-];
 
-let testTime = 180
-let currentCueIndex = 0;
-let holdStartTime = null
-const tolerance = 0.3
-
-function checkPoseTiming(beat) {
-    const cue = cues[currentCueIndex];
-    if (!cue) return;
-    const inWindow = Math.abs(beat - cue.beat) < tolerance;
-    if (inWindow) {
-        if (holdStartTime === null) {
-            holdStartTime = beat
-            console.log("Pose gestartet:", cue.pose);
-            console.log(holdStartTime)
-            const heldTime = testTime - holdStartTime;
-            if (heldTime >= cue.duration) {
-                console.log("Pose gehalten!:", cue.pose);
-                holdStartTime = null
-                currentCueIndex++;
-            }
-        }
-    }
-
-    // if (time > cue.time + tolerance) {
-    //     currentCueIndex++;
-    // }
-}
 
 
 function onRecognizedPose(label) {
@@ -162,10 +121,62 @@ function onPoseResults(results) {
     if (label !== currentLabel) {
         onRecognizedPose(label);
         currentLabel = label;
+        // console.log(currentLabel);
     }
 
     context.restore();
 }
+
+
+const cues = [
+    { beat: 22.0, pose: "pose-1", duration: 2 },
+    { beat: 37.0, pose: "pose-2", duration: 2 },
+    { beat: 54.0, pose: "pose-1", duration: 2 },
+    { beat: 93.0, pose: "pose-2", duration: 2 },
+    { beat: 96.0, pose: "pose-1", duration: 2 },
+    { beat: 110.0, pose: "pose-2", duration: 2 },
+    { beat: 113.0, pose: "pose-1", duration: 2 },
+    { beat: 133.0, pose: "pose-2", duration: 2 },
+    { beat: 165.0, pose: "pose-1", duration: 2 },
+    { beat: 168.0, pose: "pose-2", duration: 2 },
+    { beat: 173.0, pose: "pose-1", duration: 2 },
+    { beat: 176.0, pose: "pose-2", duration: 2 }
+];
+
+let testTime = 180
+let currentCueIndex = 0;
+let holdStartTime = null
+const tolerance = 1
+
+function checkPoseTiming(beat) {
+    const cue = cues[currentCueIndex];
+    if (!cue) return;
+    const inWindow = Math.abs(beat - cue.beat) < tolerance;
+    if (inWindow) {
+        console.log(cue.pose);
+
+        if (holdStartTime === null, currentLabel == cue.pose) {
+            holdStartTime = beat
+            console.log("Pose gestartet:", cue.pose);
+            console.log(holdStartTime)
+            const heldTime = testTime - holdStartTime;
+            if (heldTime >= cue.duration) {
+                console.log("Pose gehalten!:", cue.pose);
+                holdStartTime = null
+                currentCueIndex++;
+            }
+        }
+        else {
+            // console.log("Failed");
+
+        }
+    }
+
+    // if (time > cue.time + tolerance) {
+    //     currentCueIndex++;
+    // }
+}
+
 
 // calculate features
 function getPoseFeatures(landmarks) {
