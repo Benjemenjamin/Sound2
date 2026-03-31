@@ -129,31 +129,44 @@ function onPoseResults(results) {
 
 
 const cues = [
-    { beat: 22.0, pose: "pose-1", duration: 1 },
-    { beat: 37.0, pose: "pose-2", duration: 1 },
-    { beat: 54.0, pose: "pose-1", duration: 1 },
-    { beat: 93.0, pose: "pose-2", duration: 1 },
-    { beat: 96.0, pose: "pose-1", duration: 1 },
-    { beat: 110.0, pose: "pose-2", duration: 1 },
-    { beat: 113.0, pose: "pose-1", duration: 1 },
-    { beat: 133.0, pose: "pose-2", duration: 4 },
-    { beat: 165.0, pose: "pose-1", duration: 1 },
-    { beat: 168.0, pose: "pose-2", duration: 1 },
-    { beat: 173.0, pose: "pose-1", duration: 1 },
-    { beat: 176.0, pose: "pose-2", duration: 1 }
+    { beat: 22.0, pose: "pose-1", duration: 1, double: false},
+    { beat: 37.0, pose: "pose-2", duration: 1, double: false },
+    { beat: 54.0, pose: "pose-1", duration: 1, double: false },
+    { beat: 93.0, pose: "pose-2", duration: 1, double: true },
+    { beat: 96.0, pose: "pose-1", duration: 1, double: true },
+    { beat: 110.0, pose: "pose-2", duration: 1, double: true },
+    { beat: 113.0, pose: "pose-1", duration: 1, double: true },
+    { beat: 133.0, pose: "pose-2", duration: 4, double: true },
+    { beat: 165.0, pose: "pose-1", duration: 1, double: true },
+    { beat: 168.0, pose: "pose-2", duration: 1, double: true },
+    { beat: 173.0, pose: "pose-1", duration: 1, double: true },
+    { beat: 176.0, pose: "pose-2", duration: 1, double: true }
 ];
 
 
 let currentCueIndex = 0;
 let holdStartTime = null
-const tolerance = 1
+const tolerance = 10
+const preTolerance = -11
 let isHolding = false;
+let tooSoon = false
+let points = 0
 
 function checkPoseTiming(beat) {
     const cue = cues[currentCueIndex];
     if (!cue) return;
 
-    const inWindow = Math.abs(beat - cue.beat) < tolerance;
+    const inWindow = Math.abs(beat - cue.beat) <= tolerance;
+    const PreWindow = Math.abs(beat) < cue.beat
+
+    if (PreWindow && currentLabel != 'unknown'){
+        console.log("Allooooooo was machen sachen");
+        if (beat - cue.beat >= preTolerance){
+            console.log("Verkackt");
+            tooSoon = true
+        }
+    }
+
 
     // 🔴 MISS CHECK (GANZ AM ANFANG)
     if (beat > cue.beat + tolerance && !isHolding) {
@@ -164,9 +177,10 @@ function checkPoseTiming(beat) {
     }
 
     // 🟢 START der Pose (nur im Fenster erlaubt)
-    if (inWindow && currentLabel === cue.pose && !isHolding) {
+    if (inWindow && currentLabel === cue.pose && !isHolding && !tooSoon) {
         holdStartTime = beat;
         isHolding = true;
+        tooSoon = false;
         console.log("Pose gestartet:", cue.pose);
     }
 
@@ -182,6 +196,9 @@ function checkPoseTiming(beat) {
                 isHolding = false;
                 holdStartTime = null;
                 currentCueIndex++;
+                points++;
+                console.log("You have:", points, "points");
+                
             }
 
         } else {
@@ -189,6 +206,8 @@ function checkPoseTiming(beat) {
 
             isHolding = false;
             holdStartTime = null;
+            tooSoon = false
+            currentCueIndex++;
         }
     }
 }
