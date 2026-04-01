@@ -68,6 +68,7 @@ function GameLoop() {
     checkPoseTiming(beat);
     trySpawn(beat);
     update(beat);
+    update2(beat);
 
 
 
@@ -154,7 +155,7 @@ const cues = [
     { beat: 175.0, pose: "pose-2", duration: 1, double: true }
 ];
 
-
+// let done = false
 let currentCueIndex = 0;
 let currentCueIndex2 = 0;
 let holdStartTime = null
@@ -170,7 +171,11 @@ function checkPoseTiming(beat) {
     const cue2 = cues[currentCueIndex2];
     if (!cue2) return;
     // console.log(cue2);
-    
+    // if (beat < cue2.beat) {
+    //     // console.log("done:", done);
+
+    //     // done = false;
+    // }
     const inWindow = Math.abs(beat - cue2.beat) <= tolerance; // 
 
     const preWindow = beat >= cue2.beat + preTolerance && beat < cue2.beat;
@@ -186,13 +191,13 @@ function checkPoseTiming(beat) {
 
 
     if (beat >= cue2.beat) {
-        console.log("AAAAAVVE MARIA", cue2.pose);
+        //console.log("AAAAAVVE MARIA", cue2.pose);
     }
 
 
     // 🔴 MISS CHECK (GANZ AM ANFANG)
     if (beat > cue2.beat + tolerance && !isHolding) {
-        console.log("❌ Pose verpasst!", cue2.pose);
+        //console.log("❌ Pose verpasst!", cue2.pose);
         tooSoon = false;
         currentCueIndex2++;
         hasSpawned = false;
@@ -246,6 +251,7 @@ const startX = 1500
 const travelBeats = 10; // wie viele Beats vorher das Bild startet
 const targetX = 600//window.innerWidth / 2; // Zielposition (z.B. Mitte)
 let activeCues = [];
+let activeSil = [];
 
 function trySpawn(beat) {
     const cue = cues[currentCueIndex];
@@ -254,20 +260,24 @@ function trySpawn(beat) {
     if (beat >= cue.beat - travelBeats) {
 
         const img = document.createElement("img");
+        const img2 = document.createElement("img");
         img.style.position = "fixed";
         img.style.left = startX + "px";
+        img2.style.left = targetX + "px";
         switch (cue.pose) {
             case "pose-1":
                 img.src = "pistoleL.png";
+                img2.src = "SILL.png"
                 break;
 
             case "pose-2":
                 img.src = "pistoleR.png";
+                img2.src = "SILR.png"
                 break;
         }
 
-        document.body.appendChild(img);
-
+        document.body.appendChild(img); //damit es wirklich in html 
+        document.body.appendChild(img2);
         const instance = {
             cue,
             element: img,
@@ -275,42 +285,92 @@ function trySpawn(beat) {
             started: true,
             finished: false
         };
+        const sil = {
+            cue,
+            element: img2,
+            spawnBeat: beat,
+            done: false,
+            started: true,
+            finished: false
+        }
 
         activeCues.push(instance);
-
+        activeSil.push(sil);
         currentCueIndex++;
     }
 }
 
 
 function update(beat) {
+    //  console.log("done:", inst.done);
+
     activeCues.forEach((inst) => {
 
         const cue = inst.cue;
 
+        //seit her gespawned, wie lange bis despawn
         const progress = (beat - inst.spawnBeat) / (cue.beat - inst.spawnBeat);
         const clamped = Math.max(0, Math.min(progress, 1));
 
         const x = startX + clamped * (targetX - startX);
-
+        //done = false;
         inst.element.style.left = x + "px";
 
         // Ziel erreicht
         if (beat >= cue.beat) {
+
             inst.finished = true;
+            
             inst.element.style.left = targetX + "px";
         }
-    });
 
-    // 🧹 Alte Elemente entfernen
-    activeCues = activeCues.filter(inst => {
-        if (inst.finished) {
-            inst.element.remove();
-            return false;
-        }
-        return true;
-    });
+
+        // 🧹 Alte Elemente entfernen
+        activeCues = activeCues.filter(inst => {
+            if (inst.finished) {
+                inst.element.remove();
+
+                // done = true;
+                return false;
+            }
+            return true;
+        });
+
+    })
 }
+
+
+
+function update2(beat) {
+
+    activeSil.forEach((inst) => {
+        const cue1 = inst.cue;
+        inst.done = true;
+        if (beat < cue1.beat) {
+
+            inst.done = false;
+            console.log("Done: False");
+
+
+        }
+        activeSil = activeSil.filter(inst => {
+            if (inst.done) {
+                console.log("remove");
+                inst.element.remove();
+                
+                return false;
+            }
+            return true;
+        });
+
+    })
+}
+
+
+
+
+
+
 
 // let poseOver = false;
 
