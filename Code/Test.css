@@ -17,8 +17,9 @@ img {
 
 video,
 canvas {
-  width: 640px;
-  height: 480px;
+  
+  width: 980px;
+  height: auto
 }
 
 video {

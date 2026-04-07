@@ -136,7 +136,7 @@ const img1 = document.getElementById("pistoleL");
 const img2 = document.getElementById("pistoleR");
 const button = document.getElementById("StartButton");
 const stops = document.getElementById("pauseButton");
-const speed = 12;
+
 
 
 
@@ -170,12 +170,7 @@ document.getElementById("points").innerText = points;
 function checkPoseTiming(beat) {
     const cue2 = cues[currentCueIndex2];
     if (!cue2) return;
-    // console.log(cue2);
-    // if (beat < cue2.beat) {
-    //     // console.log("done:", done);
-
-    //     // done = false;
-    // }
+   
     const inWindow = Math.abs(beat - cue2.beat) <= tolerance; // 
 
     const preWindow = beat >= cue2.beat + preTolerance && beat < cue2.beat;
@@ -198,6 +193,7 @@ function checkPoseTiming(beat) {
     // 🔴 MISS CHECK (GANZ AM ANFANG)
     if (beat > cue2.beat + tolerance && !isHolding) {
         //console.log("❌ Pose verpasst!", cue2.pose);
+
         tooSoon = false;
         currentCueIndex2++;
         hasSpawned = false;
