@@ -350,7 +350,7 @@ function rush(beat) {
 
 const startX = 1800
 const travelBeats = 8; // wie viele Beats vorher das Bild startet
-const targetX = 1130//window.innerWidth / 2; // Zielposition (z.B. Mitte)
+const targetX = 1000//window.innerWidth / 2; // Zielposition (z.B. Mitte)
 let activeCues = [];
 let activeSil = [];
 let changed = false
