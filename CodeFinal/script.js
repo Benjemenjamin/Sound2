@@ -1,5 +1,6 @@
 // const { createElement } = require("react");
 
+
 const videoElement = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
@@ -7,7 +8,7 @@ const poseNameInput = document.getElementById('poseName');
 const addPoseButton = document.getElementById('addPoseButton');
 const saveButton = document.getElementById('saveButton');
 const fileInput = document.getElementById("file-input");
-
+let promptName = prompt("name")
 
 const poseLibraryFileName = 'pose-library.json';
 const distanceThreshold = 0.2;
@@ -297,9 +298,9 @@ function checkPoseTiming(beat) {
 }
 //  document.getElementById("rush").innerText = ""
 
+let end = false;
 
-
-function rush(beat) {
+async function rush(beat) {
 
 
   for (let i = beat; i >= 165;) {
@@ -339,13 +340,30 @@ function rush(beat) {
     }
     break;
   }
-  if (beat >= 390) {
+  if (beat >= 390 && !end) {
     document.getElementById("Good").innerText = "GOOD"
     document.getElementById("Job").innerText = "JOB!"
+    end = true;
+
+
+    const player = new playerInfo(promptName, points)
+    const jsonData = JSON.stringify(player);
+    await sendJsonWithPOST('http://localhost:3000/', jsonData);
+    const data = await requestJsonWithGET('http://localhost:3000/')
+
   }
 
 }
+class playerInfo{
+  name
+  Score
+  
 
+  constructor(_name, _Score){
+    this.name = _name
+    this.Score = _Score
+  }
+}
 
 
 const startX = 1800
@@ -568,7 +586,27 @@ function update2(beat) {
 }
 
 
+async function sendJsonWithPOST(url, jsonData) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: jsonData
+  });
+  // You can handle the response as with GET
+  return response;
+}
 
+async function requestJsonWithGET(url) {
+  const response = await fetch(url);
+  console.log('Response:', response);
+  const jsonData = await response.json();
+  console.log('JSON data:', jsonData);
+  const parsed = jsonData;
+  console.log('JS object from JSON data:', parsed);
+  return jsonData;
+}
 
 // Spawn ca. 10 Beats vorher
 //   if (!hasSpawned && beat >= cue.beat - 30) {
