@@ -64,7 +64,7 @@ canvas {
   background-color: #eee;
 }
 
-.startButton {
+/* .startButton {
   position: absolute;
   top: 98.5%;
   left: 2%;
@@ -77,6 +77,18 @@ canvas {
   margin-right: 5px;
   font-size: 0.8em;
   background-color: #eee;
+} */
+.startButton {
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+
+  padding: 8px 16px;
+  border: 1px solid;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #eee;
+  cursor: pointer;
 }
 
 .pauseButton {
@@ -93,13 +105,16 @@ canvas {
   background-color: #ccc;
 }
 
-.neu {
+/* .neu {
 position: absolute;
   top: 98.5%;
   left: 16%;
   transform: translate(-50%, -50%);
-  
-
+} */
+.neu {
+  position: fixed;
+  bottom: 8px;
+  left: 100px;
 }
 
 .punkte {
@@ -197,4 +212,229 @@ input[type="file"] {
 
 input[type="file"]::file-selector-button {
   display: none;
+}
+
+/* ==============================
+   MENÜ-OVERLAYS
+   ============================== */
+
+.menuOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+    box-sizing: border-box;
+    padding: 24px;
+    overflow-y: auto;
+
+    background: rgba(10, 12, 25, 0.96);
+    color: white;
+    text-align: center;
+}
+
+/* Überschriften im Menü */
+
+.menuOverlay h1 {
+    margin: 0 0 20px;
+    font-size: clamp(28px, 5vw, 48px);
+}
+
+.menuOverlay h2 {
+    margin: 0;
+    font-size: clamp(24px, 4vw, 36px);
+}
+
+/* Menü-Buttons */
+
+.menuOverlay button {
+    box-sizing: border-box;
+    width: min(280px, 85vw);
+    padding: 12px 24px;
+
+    border: 1px solid #777;
+    border-radius: 8px;
+
+    background: #eee;
+    color: #222;
+
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.menuOverlay button:hover {
+    background: #ccc;
+}
+
+
+/* ==============================
+   LEADERBOARD
+   ============================== */
+
+#leaderboard {
+    box-sizing: border-box;
+    width: min(600px, 90vw);
+    max-width: 100%;
+    margin: 0;
+    padding: 20px;
+
+    border-radius: 12px;
+    background: #1e1e2f;
+    color: white;
+    text-align: center;
+}
+
+#leaderboardTitle {
+    margin: 0 0 16px;
+}
+
+#leaderboard table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#leaderboard th,
+#leaderboard td {
+    padding: 10px;
+    border-bottom: 1px solid #44445a;
+    text-align: center;
+}
+
+#leaderboard th {
+    color: #aab8ff;
+}
+
+/* #leaderboard tbody tr:first-child {
+    color: #ffd166;
+    font-weight: bold;
+    font-size:3cap;
+} */
+
+
+/* 1. Platz – Gold */
+#leaderboard tbody tr:nth-child(1) {
+    color: #ffd166;
+    font-weight: bold;
+    font-size:2cap;
+}
+
+/* 2. Platz – Silber */
+#leaderboard tbody tr:nth-child(2) {
+    font-weight: bold;
+    /* font-size:2.2cap; */
+}
+
+/* 3. Platz – Bronze */
+#leaderboard tbody tr:nth-child(3) {
+    font-weight: bold;
+    /* font-size:2cap; */
+}
+
+#leaderboard tbody tr:hover {
+    background: #2c2c43;
+}
+
+
+/* ==============================
+   KLEINE BILDSCHIRME
+   ============================== */
+
+@media (max-width: 600px) {
+    .menuOverlay {
+        gap: 14px;
+        padding: 16px;
+    }
+
+    #leaderboard {
+        padding: 12px;
+    }
+
+    #leaderboard th,
+    #leaderboard td {
+        padding: 7px 5px;
+        font-size: 14px;
+    }
+}
+
+/* Leaderboard mittig im Overlay platzieren */
+#leaderboardMenu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Leaderboard-Box selbst zentrieren */
+#leaderboardMenu #leaderboard {
+    width: min(600px, 90vw);
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Überschrift des Leaderboards */
+#leaderboardMenu > h2 {
+    text-align: center;
+}
+
+/* Alle Leaderboards gleich breit und zentriert */
+#leaderboardMenu #leaderboard {
+    width: min(700px, 90vw);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Einheitliche Spaltenbreite für alle Ranglisten */
+#leaderboardMenu #leaderboard table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+/* Lange Namen oder Werte sollen das Layout nicht verschieben */
+#leaderboardMenu #leaderboard th,
+#leaderboardMenu #leaderboard td {
+    overflow-wrap: anywhere;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Alle Leaderboard-Buttons */
+#leaderboardMenu .leaderBoardButton {
+    background-color: #343450;
+    color: white;
+
+    border: 2px solid #7777aa;
+    border-radius: 8px;
+
+    padding: 10px 16px;
+    margin: 5px;
+
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Wenn man mit der Maus darüberfährt */
+#leaderboardMenu .leaderBoardButton:hover {
+    background-color: #505078;
+    border-color: #aab8ff;
+}
+
+/* Wenn man einen Button anklickt */
+#leaderboardMenu .leaderBoardButton:active {
+    background-color: #25253a;
+}
+
+#leaderboardMenu .leaderBoardButton.activeLeaderboard {
+    /* background-color: #25253a; */
+    border-color: #ffd166;
+    font-weight: 600;
 }

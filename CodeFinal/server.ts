@@ -3,6 +3,8 @@ const port = 3000;
 let savedData: any;
 let dataBank: Array<string> = []
 let player: any;
+
+
 Deno.serve({ hostname, port }, async (request: Request): Promise<Response> => {
   const headers = new Headers({
     "Content-Type": "application/json",
@@ -15,10 +17,34 @@ Deno.serve({ hostname, port }, async (request: Request): Promise<Response> => {
   }
 
   if (request.method === "GET") {
-    // Send information to the client
-    // const data = savedData;
-    return new Response(JSON.stringify(player), { status: 200, headers });
-  }
+    const url = new URL(request.url);
+    
+    const leaderboard = url.searchParams.get("leaderboard");
+    let players;
+
+    switch (leaderboard) {
+        case "PointSum":
+            players = sortByPointSum.all();
+            break;
+
+        case "averageScore":
+            players = sortByAverageScore.all();
+            break;
+
+        case "TimesPlayed":
+            players = sortByTimesPlayd.all();
+            break;
+
+        default:
+            players = sortByHighScore.all();
+            break;
+    }
+
+    return new Response(JSON.stringify(players), {
+        status: 200,
+        headers
+    });
+}
 
   if (request.method === "POST") {
     // Receive data from the client
@@ -28,17 +54,22 @@ Deno.serve({ hostname, port }, async (request: Request): Promise<Response> => {
       dataBank.push(data)
       savedData = data
       console.log(data);
-      insertPlayer.run(data.name, data.Score, data.Score, 0, 0);
+      insertPlayer.run(data.name, 0, 0, 0, 0);
       player = getPlayer.get(data.name);
 
       player.TimesPlayed++;
+      console.log(player.TimesPlayed);
+
       player.PointSum += data.Score
       player.averageScore = player.PointSum / player.TimesPlayed
+
       if (data.Score > player.highScore) {
         updatePlayerH.run(data.Score, player.averageScore, player.TimesPlayed, player.PointSum, data.name);
       }
-      else
+      else {
         updatePlayer.run(player.averageScore, player.TimesPlayed, player.PointSum, data.name)
+      }
+
 
     }
     catch (err) {
@@ -53,8 +84,6 @@ Deno.serve({ hostname, port }, async (request: Request): Promise<Response> => {
 });
 
 console.log(`Server running at http://${hostname}:${port}/`);
-
-
 
 
 // Import from the jsr:@db/sqlite package
@@ -98,5 +127,19 @@ const updatePlayer = db.prepare(
 const getPlayer = db.prepare(
   "SELECT * FROM player WHERE name = ?"
 )
+const sortByHighScore = db.prepare(
+  "SELECT * FROM player ORDER BY highScore DESC;"
+);
+const sortByAverageScore = db.prepare(
+  "SELECT * FROM player ORDER BY averageScore DESC;"
+);
+const sortByTimesPlayd = db.prepare(
+  "SELECT * FROM player ORDER BY TimesPlayed DESC;"
+);
+const sortByPointSum = db.prepare(
+  "SELECT * FROM player ORDER BY PointSum DESC;"
+);
+
+
 
 

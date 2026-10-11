@@ -8,7 +8,13 @@ const poseNameInput = document.getElementById('poseName');
 const addPoseButton = document.getElementById('addPoseButton');
 const saveButton = document.getElementById('saveButton');
 const fileInput = document.getElementById("file-input");
+const startButton = document.getElementById("startButton")
+const leaderBoardButtonH = document.getElementById("leaderBoardButtonH")
+const leaderBoardButtonA = document.getElementById("leaderBoardButtonA")
+const leaderBoardButtonT = document.getElementById("leaderBoardButtonT")
+const leaderBoardButtonP = document.getElementById("leaderBoardButtonP")
 let promptName = prompt("name")
+let players;
 
 const poseLibraryFileName = 'pose-library.json';
 const distanceThreshold = 0.2;
@@ -45,6 +51,10 @@ let history = [];
 
   // addPoseButton.addEventListener('click', addPose); // add pose button
   startButton.addEventListener('click', GameStart);
+  leaderBoardButtonH.addEventListener('click', showLeaderBoardH);
+  leaderBoardButtonA.addEventListener('click', showLeaderBoardA);
+  leaderBoardButtonT.addEventListener('click', showLeaderBoardT);
+  leaderBoardButtonP.addEventListener('click', showLeaderBoardP);
   // pauseButton.addEventListener('click', GamePause);
   fileInput.addEventListener('change', loadPoseLibrary); // load pose library input
   // saveButton.addEventListener('click', savePoseLibrary); // save pose library button
@@ -52,8 +62,112 @@ let history = [];
 
 const bpm = 113;
 
+async function showLeaderBoardH() {
+  players = await requestJsonWithGET('http://localhost:3000/', "highScore")
+  displayLeaderboard(players, "highScore")
+  console.log(players);
+}
+
+async function showLeaderBoardA() {
+  players = await requestJsonWithGET('http://localhost:3000/', "averageScore")
+  displayLeaderboard(players, "averageScore")
+  console.log(players);
+}
+
+async function showLeaderBoardT() {
+  players = await requestJsonWithGET('http://localhost:3000/', "TimesPlayed")
+  displayLeaderboard(players, "TimesPlayed")
+  console.log(players);
+}
+
+async function showLeaderBoardP() {
+  players = await requestJsonWithGET('http://localhost:3000/', "PointSum")
+  displayLeaderboard(players, "PointSum")
+  console.log(players);
+}
+
+
+function showLeaderboard() {
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("leaderboardMenu").style.display = "flex";
+}
+
+function hideLeaderboard() {
+  document.getElementById("leaderboardMenu").style.display = "none";
+  document.getElementById("mainMenu").style.display = "flex";
+}
+
+
+
+function displayLeaderboard(players, type) {
+  // Ausgewählten Button markieren
+  document.querySelectorAll(".leaderBoardButton").forEach(button => {
+    button.classList.remove("activeLeaderboard");
+  });
+
+  const buttonIds = {
+    highScore: "leaderBoardButtonH",
+    averageScore: "leaderBoardButtonA",
+    TimesPlayed: "leaderBoardButtonT",
+    PointSum: "leaderBoardButtonP"
+  };
+
+  const activeButton = document.getElementById(buttonIds[type]);
+
+  if (activeButton) {
+    activeButton.classList.add("activeLeaderboard");
+  }
+
+
+  const body = document.getElementById("leaderboardBody");
+  const title = document.getElementById("leaderboardTitle");
+  const heading = document.getElementById("scoreHeading");
+
+  body.innerHTML = "";
+
+  const leaderboardNames = {
+    highScore: "Highscore",
+    averageScore: "Average Score",
+    TimesPlayed: "Games Played",
+    PointSum: "Points earned"
+  };
+
+  title.textContent = leaderboardNames[type] ?? "Leaderboard";
+  heading.textContent = leaderboardNames[type] ?? "score";
+
+  players.forEach((player, index) => {
+    const row = document.createElement("tr");
+
+    const rankCell = document.createElement("td");
+    rankCell.textContent = index + 1;
+
+    const nameCell = document.createElement("td");
+    nameCell.textContent = player.name;
+
+    const scoreCell = document.createElement("td");
+    scoreCell.textContent = player[type];
+
+    if (player.name === promptName && index !== 0) {
+      row.classList.add("currentPlayer");
+    }
+
+    row.append(rankCell, nameCell, scoreCell);
+    body.appendChild(row);
+  });
+}
+
+
+function startGame() {
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("leaderboardMenu").style.display = "none";
+}
+
+
 
 function GameStart() {
+  // document.getElementById("mainMenu").style.display = "none";
+  // document.getElementById("leaderboardMenu").style.display = "none";
+  // document.getElementById("game").style.display = "block";
   console.log("Hello");
   Audio.currentTime = 0;
   Audio.play()
@@ -348,18 +462,19 @@ async function rush(beat) {
 
     const player = new playerInfo(promptName, points)
     const jsonData = JSON.stringify(player);
-    await sendJsonWithPOST('http://localhost:3000/', jsonData);
-    const data = await requestJsonWithGET('http://localhost:3000/')
+    const response = await sendJsonWithPOST('http://localhost:3000/', jsonData);
+    console.log(response);
+
 
   }
 
 }
-class playerInfo{
+class playerInfo {
   name
   Score
-  
 
-  constructor(_name, _Score){
+
+  constructor(_name, _Score) {
     this.name = _name
     this.Score = _Score
   }
@@ -586,6 +701,8 @@ function update2(beat) {
 }
 
 
+
+
 async function sendJsonWithPOST(url, jsonData) {
   const response = await fetch(url, {
     method: 'POST',
@@ -598,14 +715,17 @@ async function sendJsonWithPOST(url, jsonData) {
   return response;
 }
 
-async function requestJsonWithGET(url) {
-  const response = await fetch(url);
-  console.log('Response:', response);
+async function requestJsonWithGET(url, leaderboard) {
+  const requestUrl =
+    `${url}?leaderboard=${encodeURIComponent(leaderboard)}`;
+
+  const response = await fetch(requestUrl);
+  if (!response.ok) {
+    throw new console.error(`HTTP-Fehler: ${response.status}`);
+  }
   const jsonData = await response.json();
-  console.log('JSON data:', jsonData);
   const parsed = jsonData;
-  console.log('JS object from JSON data:', parsed);
-  return jsonData;
+  return jsonData
 }
 
 // Spawn ca. 10 Beats vorher
