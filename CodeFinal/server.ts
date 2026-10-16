@@ -111,7 +111,6 @@ db.prepare(`CREATE TABLE IF NOT EXISTS player (
 )`).run();
 
 
-
 const insertPlayer = db.prepare(
   "INSERT OR IGNORE INTO player (name, highScore, averageScore, TimesPlayed, PointSum) VALUES (?, ?, ?, ?, ?)"
 );
